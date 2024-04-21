@@ -1,10 +1,6 @@
-from datetime import date, datetime
-
-from sqlalchemy.orm import Session, joinedload
-
-from db.database import SessionLocal
+from sqlalchemy.orm import Session
 from db.models import DbAuthor, DbBook
-from schemas import Author, AuthorCreate, Book, BookCreate
+from schemas import AuthorCreate, BookCreate
 
 
 def get_author_list(db: Session):
@@ -25,7 +21,7 @@ def create_author(db: Session, author: AuthorCreate):
     db_author = DbAuthor(
         name=author.name,
         bio=author.bio,
-        books=author.books,
+        # books=author.books,
     )
     db.add(db_author)
     db.commit()
@@ -36,12 +32,24 @@ def create_author(db: Session, author: AuthorCreate):
 
 def get_book_list(
     db: Session,
-    author: str | None = None,
+    author_id: int | None = None,
+    author_name: str | None = None,
+    skip: int = 0,
+    limit: int = 10
 ):
     queryset = db.query(DbBook)
 
-    if author is not None:
-        queryset = queryset.filter(DbBook.author.has(name=author))
+    if author_id is not None:
+        queryset = queryset.filter(
+            DbBook.author_id == author_id
+        )
+
+    if author_name is not None:
+        queryset = queryset.join(DbBook.author).filter(
+            DbAuthor.name.ilike(f"%{author_name}%")
+        )
+
+    queryset = queryset.offset(skip).limit(limit)
 
     return queryset.all()
 
@@ -54,10 +62,10 @@ def create_book(db: Session, book: BookCreate):
     db_book = DbBook(
         title=book.title,
         summary=book.summary,
-        publication_date=book.publication_date
+        publication_date=book.publication_date,
+        author_id=book.author_id
     )
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
     return db_book
-

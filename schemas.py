@@ -1,8 +1,5 @@
-from datetime import date, datetime
-from typing import ForwardRef
-
+from datetime import date
 from pydantic import BaseModel
-
 
 
 class AuthorBase(BaseModel):
@@ -39,5 +36,3 @@ class Book(BookBase):
 
     class Config:
         from_attributes = True
-
-

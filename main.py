@@ -47,7 +47,7 @@ def read_single_author(author_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/authors/", response_model=Author)
-def create_author(
+def create_author_endpoint(
     author: AuthorCreate,
     db: Session = Depends(get_db),
 ):
@@ -64,11 +64,14 @@ def create_author(
 
 @app.get("/books/", response_model=list[Book])
 def read_books(
-    author: str | None = None,
+    author_id: int | None = None,
+    author_name: str | None = None,
     db: Session = Depends(get_db),
 ):
     return get_book_list(
-        db=db, author=author
+        db=db,
+        author_id=author_id,
+        author_name=author_name,
     )
 
 
@@ -83,5 +86,5 @@ def read_single_book(book_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/books/", response_model=Book)
-def create_book(book: BookCreate, db: Session = Depends(get_db)):
+def create_book_endpoint(book: BookCreate, db: Session = Depends(get_db)):
     return create_book(db=db, book=book)
