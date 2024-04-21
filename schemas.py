@@ -5,29 +5,28 @@ from pydantic import BaseModel
 class AuthorBase(BaseModel):
     name: str
     bio: str
-    # books: list["Book"]
 
 
 class AuthorCreate(AuthorBase):
     pass
 
 
-class Author(AuthorBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-
 class BookBase(BaseModel):
     title: str
     summary: str
     publication_date: date
-    author_id: int
 
 
 class BookCreate(BookBase):
-    pass
+    author_id: int
+
+
+class Author(AuthorBase):
+    id: int
+    books: list[BookBase]
+
+    class Config:
+        from_attributes = True
 
 
 class Book(BookBase):
