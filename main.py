@@ -7,6 +7,7 @@ from crud import (
     create_book,
     create_author, get_author_list, get_author_detail, get_book_detail,
 )
+from db.models import DbAuthor, DbBook
 
 from schemas import (
     Author, AuthorCreate, Book, BookCreate
@@ -32,12 +33,16 @@ def root() -> dict:
 
 
 @app.get("/authors/", response_model=list[Author])
-def read_authors(db: Session = Depends(get_db)):
+def read_authors(
+        db: Session = Depends(get_db)
+) -> list[DbAuthor]:
     return get_author_list(db=db)
 
 
 @app.get("/authors/{author_id}/", response_model=Author)
-def read_single_author(author_id: int, db: Session = Depends(get_db)):
+def read_single_author(
+        author_id: int, db: Session = Depends(get_db)
+) -> DbAuthor:
     db_author = get_author_detail(db=db, author_id=author_id)
 
     if db_author is None:
@@ -50,7 +55,7 @@ def read_single_author(author_id: int, db: Session = Depends(get_db)):
 def create_author_endpoint(
     author: AuthorCreate,
     db: Session = Depends(get_db),
-):
+) -> DbAuthor:
     db_author = get_author_by_name(db=db, name=author.name)
 
     if db_author:
@@ -67,7 +72,7 @@ def read_books(
     author_id: int | None = None,
     author_name: str | None = None,
     db: Session = Depends(get_db),
-):
+) -> list[DbBook]:
     return get_book_list(
         db=db,
         author_id=author_id,
@@ -76,7 +81,9 @@ def read_books(
 
 
 @app.get("/books/{book_id}/", response_model=Book)
-def read_single_book(book_id: int, db: Session = Depends(get_db)):
+def read_single_book(
+        book_id: int, db: Session = Depends(get_db)
+) -> DbBook:
     db_book = get_book_detail(db=db, book_id=book_id)
 
     if db_book is None:
@@ -86,5 +93,7 @@ def read_single_book(book_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/books/", response_model=Book)
-def create_book_endpoint(book: BookCreate, db: Session = Depends(get_db)):
+def create_book_endpoint(
+        book: BookCreate, db: Session = Depends(get_db)
+) -> DbBook:
     return create_book(db=db, book=book)

@@ -3,25 +3,24 @@ from db.models import DbAuthor, DbBook
 from schemas import AuthorCreate, BookCreate
 
 
-def get_author_list(db: Session):
+def get_author_list(db: Session) -> list[DbAuthor]:
     return db.query(DbAuthor).all()
 
 
-def get_author_detail(db: Session, author_id: int):
+def get_author_detail(db: Session, author_id: int) -> DbAuthor:
     return db.query(DbAuthor).get(author_id)
 
 
-def get_author_by_name(db: Session, name: str):
+def get_author_by_name(db: Session, name: str) -> DbAuthor:
     return (
         db.query(DbAuthor).filter(DbAuthor.name == name).first()
     )
 
 
-def create_author(db: Session, author: AuthorCreate):
+def create_author(db: Session, author: AuthorCreate) -> DbAuthor:
     db_author = DbAuthor(
         name=author.name,
         bio=author.bio,
-        # books=author.books,
     )
     db.add(db_author)
     db.commit()
@@ -36,7 +35,7 @@ def get_book_list(
     author_name: str | None = None,
     skip: int = 0,
     limit: int = 10
-):
+) -> list[DbBook]:
     queryset = db.query(DbBook)
 
     if author_id is not None:
@@ -54,11 +53,11 @@ def get_book_list(
     return queryset.all()
 
 
-def get_book_detail(db: Session, book_id: int):
+def get_book_detail(db: Session, book_id: int) -> DbBook:
     return db.query(DbBook).get(book_id)
 
 
-def create_book(db: Session, book: BookCreate):
+def create_book(db: Session, book: BookCreate) -> DbBook:
     db_book = DbBook(
         title=book.title,
         summary=book.summary,
